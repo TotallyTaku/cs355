@@ -4,6 +4,9 @@
 #include <dirent.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <pwd.h>
+#include <grp.h>
+#include <time.h>
 
 int do_ls(char* directory){
   
@@ -11,10 +14,10 @@ int do_ls(char* directory){
   struct dirent* currentEntry; // struct from which we can extract data of the current Entry in the directory/file (filename = d_name)
 
 
-  // return if fail to open the directoryStream connected to directory 
+  // exit if opening directory fails 
   if ((directoryStream  = opendir(directory)) == NULL){
-    printf("Failed to open directory\n");
-      return -1; // error out 
+    perror("Failed to open directory");
+      exit(EXIT_FAILURE);  
     }
 
 
@@ -24,22 +27,31 @@ int do_ls(char* directory){
     // if the current directory has a hidden file, skip over it 
     if (currentEntry->d_name[0] == '.'){
       continue;
-      } else {
+    } else {
         
       struct stat sb;
-      
+      // exit if opening sb fails
       if ((stat(directory, &sb)) == -1){
         perror("lstat");
         exit(EXIT_FAILURE);
       }
-        
+      
       char mode_str[11] = "----------";
-      printf("mode before: %d\n", sb.st_mode);
-      printf("masked mode val: %d\n",sb.st_mode & S_IFMT);
+      struct passwd* pwd;
+    
+      // ADD CODE HERE TO MODIFY mode_str
+      // CODE HERE
 
-      printf("%d LINKS OWNER GROUP FILE_SIZE LAST_MODIFIED %s\n", sb.st_mode,currentEntry->d_name);
 
-      }
+
+      pwd = getpwuid(sb.st_uid);
+
+      //printf("Last modified: %s \n", ctime(&sb.st_mtim.tv_sec));
+      char* last_mod = ctime(&sb.st_mtim.tv_sec);
+      //last_mod[sizeof(last_mod)-1] = 'L';
+
+      printf("%s %ld %s %s %ld %s %s\n", mode_str, sb.st_nlink, pwd->pw_name, getgrgid(sb.st_uid)->gr_name, sb.st_size, last_mod, currentEntry->d_name);
+    }  
   }   
   closedir(directoryStream); 
 
