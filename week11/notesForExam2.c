@@ -5,6 +5,8 @@
 #include <fcntl.h>
 
 
+// FROM NOTES IN MARKDOWN EXPLAINING HOW OPEN() WORKS FOR Errno
+// AND perror 
 void open_example(){
   
   // try to open a file that doesn't exist 
@@ -18,13 +20,18 @@ void open_example(){
 } 
 
 
-
+// PROBLEM 3
 void myCp_example(char* source, char* destination){
 
   // Open source as read only O_RDONLY flag
   // Open destination with O_CREAT/O_APPEND whatever you want to do with destination file
-  // 
+  // Read line by line in source and store it in a buffer
+  // Write that buffer into destination
+  // Close both source and destination 
+}
 
+// PROBLEM 4
+void print_last_access(char* source){
 
 }
 
